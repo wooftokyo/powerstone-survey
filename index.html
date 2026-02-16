@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Stone Business - Inner Vision Survey</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 30%, #0d1b2a 70%, #0a0a1a 100%);
+      color: #e0d6f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1.5px 1.5px at 50% 10%, rgba(200,180,255,0.5), transparent),
+        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 90% 80%, rgba(200,180,255,0.3), transparent),
+        radial-gradient(1.5px 1.5px at 15% 85%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 55% 75%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 85% 15%, rgba(200,180,255,0.5), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 1s ease;
+    }
+
+    .crystal-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(168, 130, 255, 0.6));
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #c9a0ff, #f0c8ff, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: #9a8cb8;
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 26, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 0;
+      z-index: 10;
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7c3aed, #c084fc, #e9b8ff);
+      border-radius: 2px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .progress-text {
+      font-size: 0.7rem;
+      color: #7c6a9a;
+      text-align: right;
+      margin-top: 6px;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #c9a0ff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(168, 130, 255, 0.15);
+    }
+
+    .section-title span {
+      font-size: 1.2rem;
+    }
+
+    /* Question card */
+    .question-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(168, 130, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .question-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(168, 130, 255, 0.25);
+    }
+
+    .question-card.answered {
+      border-color: rgba(168, 130, 255, 0.3);
+      background: rgba(168, 130, 255, 0.05);
+    }
+
+    .question-text {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .question-num {
+      display: inline-block;
+      font-size: 0.65rem;
+      color: #7c6a9a;
+      background: rgba(168, 130, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    /* Yes / No buttons */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 0;
+      border: 1px solid rgba(168, 130, 255, 0.2);
+      border-radius: 10px;
+      background: transparent;
+      color: #c0b0d8;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.1em;
+    }
+
+    .btn:hover {
+      background: rgba(168, 130, 255, 0.1);
+      border-color: rgba(168, 130, 255, 0.4);
+    }
+
+    .btn.selected-yes {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(192, 132, 252, 0.2));
+      border-color: #a78bfa;
+      color: #e9d5ff;
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+    }
+
+    .btn.selected-no {
+      background: rgba(100, 80, 130, 0.2);
+      border-color: rgba(150, 130, 180, 0.4);
+      color: #a898c0;
+    }
+
+    /* Submit area */
+    .submit-area {
+      text-align: center;
+      margin-top: 50px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .submit-btn {
+      display: inline-block;
+      padding: 16px 60px;
+      border: 1px solid rgba(168, 130, 255, 0.4);
+      border-radius: 50px;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(192, 132, 252, 0.1));
+      color: #d4b8ff;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      transition: all 0.4s ease;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(192, 132, 252, 0.25));
+      border-color: #a78bfa;
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .submit-hint {
+      font-size: 0.7rem;
+      color: #6a5a8a;
+      margin-top: 12px;
+    }
+
+    /* Result screen */
+    .result-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .result-screen.show {
+      display: block;
+    }
+
+    .result-screen h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #c9a0ff;
+      margin-bottom: 16px;
+    }
+
+    .result-screen p {
+      font-size: 0.85rem;
+      color: #9a8cb8;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .result-code {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(168, 130, 255, 0.15);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: left;
+      font-size: 0.8rem;
+      line-height: 2;
+      color: #c0b0d8;
+      margin-bottom: 30px;
+      word-break: break-all;
+    }
+
+    .result-code .q-yes {
+      color: #c084fc;
+    }
+
+    .result-code .q-no {
+      color: #6a5a8a;
+    }
+
+    .copy-btn {
+      display: inline-block;
+      padding: 12px 40px;
+      border: 1px solid rgba(168, 130, 255, 0.3);
+      border-radius: 50px;
+      background: transparent;
+      color: #b098d0;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(168, 130, 255, 0.1);
+      border-color: #a78bfa;
+    }
+
+    .copy-btn.copied {
+      border-color: #22c55e;
+      color: #86efac;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { padding: 30px 16px 50px; }
+      .header h1 { font-size: 1.3rem; }
+      .question-card { padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="crystal-icon">&#x1F52E;</span>
+    <h1>Inner Vision Survey</h1>
+    <p>
+      直感を信じて、心に浮かんだまま<br>
+      「はい」か「いいえ」でお答えください
+    </p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 25</div>
+  </div>
+
+  <!-- Survey form -->
+  <div id="surveyForm">
+
+    <!-- Section 1 -->
+    <div class="section">
+      <div class="section-title"><span>&#x2728;</span> 今の想い・ビジョン</div>
+
+      <div class="question-card" data-q="1">
+        <div class="question-num">Q1</div>
+        <div class="question-text">今よりもっと多くの人に石を届けたいと感じていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(1, true, this)">はい</button>
+          <button class="btn" onclick="answer(1, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="2">
+        <div class="question-num">Q2</div>
+        <div class="question-text">遠方のお客様にも届けたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(2, true, this)">はい</button>
+          <button class="btn" onclick="answer(2, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="3">
+        <div class="question-num">Q3</div>
+        <div class="question-text">自分の言葉やメッセージを発信したいと思いますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(3, true, this)">はい</button>
+          <button class="btn" onclick="answer(3, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="4">
+        <div class="question-num">Q4</div>
+        <div class="question-text">石だけでなく、ヒーリングやリーディングなどのサービスも提供したいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(4, true, this)">はい</button>
+          <button class="btn" onclick="answer(4, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="5">
+        <div class="question-num">Q5</div>
+        <div class="question-text">一人ひとりに合った石を選んであげたいですか（オーダーメイド）？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(5, true, this)">はい</button>
+          <button class="btn" onclick="answer(5, false, this)">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section">
+      <div class="section-title"><span>&#x1F4A0;</span> 現在の活動</div>
+
+      <div class="question-card" data-q="6">
+        <div class="question-num">Q6</div>
+        <div class="question-text">今、自分のウェブサイトを持っていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(6, true, this)">はい</button>
+          <button class="btn" onclick="answer(6, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="7">
+        <div class="question-num">Q7</div>
+        <div class="question-text">Instagramを使っていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(7, true, this)">はい</button>
+          <button class="btn" onclick="answer(7, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="8">
+        <div class="question-num">Q8</div>
+        <div class="question-text">LINEを仕事に使っていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(8, true, this)">はい</button>
+          <button class="btn" onclick="answer(8, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="9">
+        <div class="question-num">Q9</div>
+        <div class="question-text">実店舗やサロンを持っていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(9, true, this)">はい</button>
+          <button class="btn" onclick="answer(9, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="10">
+        <div class="question-num">Q10</div>
+        <div class="question-text">イベントや対面販売をしていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(10, true, this)">はい</button>
+          <button class="btn" onclick="answer(10, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="11">
+        <div class="question-num">Q11</div>
+        <div class="question-text">リピーターのお客様がいますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(11, true, this)">はい</button>
+          <button class="btn" onclick="answer(11, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="12">
+        <div class="question-num">Q12</div>
+        <div class="question-text">お客様から口コミや紹介で広がることがありますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(12, true, this)">はい</button>
+          <button class="btn" onclick="answer(12, false, this)">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section">
+      <div class="section-title"><span>&#x1F319;</span> 今 困っていること・望み</div>
+
+      <div class="question-card" data-q="13">
+        <div class="question-num">Q13</div>
+        <div class="question-text">新しいお客様との出会いが少ないと感じますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(13, true, this)">はい</button>
+          <button class="btn" onclick="answer(13, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="14">
+        <div class="question-num">Q14</div>
+        <div class="question-text">ネットでの見せ方・伝え方に悩んでいますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(14, true, this)">はい</button>
+          <button class="btn" onclick="answer(14, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="15">
+        <div class="question-num">Q15</div>
+        <div class="question-text">写真を撮るのが苦手だと感じますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(15, true, this)">はい</button>
+          <button class="btn" onclick="answer(15, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="16">
+        <div class="question-num">Q16</div>
+        <div class="question-text">文章を書くのが苦手だと感じますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(16, true, this)">はい</button>
+          <button class="btn" onclick="answer(16, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="17">
+        <div class="question-num">Q17</div>
+        <div class="question-text">パソコンやスマホの操作に不安がありますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(17, true, this)">はい</button>
+          <button class="btn" onclick="answer(17, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="18">
+        <div class="question-num">Q18</div>
+        <div class="question-text">もっと売上を安定させたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(18, true, this)">はい</button>
+          <button class="btn" onclick="answer(18, false, this)">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section">
+      <div class="section-title"><span>&#x1F48E;</span> 大切にしたいこと</div>
+
+      <div class="question-card" data-q="19">
+        <div class="question-num">Q19</div>
+        <div class="question-text">スピリチュアルな世界観を大切にしたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(19, true, this)">はい</button>
+          <button class="btn" onclick="answer(19, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="20">
+        <div class="question-num">Q20</div>
+        <div class="question-text">自分のペースで無理なく進めたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(20, true, this)">はい</button>
+          <button class="btn" onclick="answer(20, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="21">
+        <div class="question-num">Q21</div>
+        <div class="question-text">顔出しや本名を出すことに抵抗がありますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(21, true, this)">はい</button>
+          <button class="btn" onclick="answer(21, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="22">
+        <div class="question-num">Q22</div>
+        <div class="question-text">安さより「本物・質」で勝負したいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(22, true, this)">はい</button>
+          <button class="btn" onclick="answer(22, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="23">
+        <div class="question-num">Q23</div>
+        <div class="question-text">お客様と深くつながる関係性を大切にしたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(23, true, this)">はい</button>
+          <button class="btn" onclick="answer(23, false, this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="question-card" data-q="24">
+        <div class="question-num">Q24</div>
+        <div class="question-text">将来的に誰かに教える（講座・スクール）こともやってみたいですか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(24, true, this)">はい</button>
+          <button class="btn" onclick="answer(24, false, this)">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section">
+      <div class="section-title"><span>&#x1F30C;</span> 最後に</div>
+
+      <div class="question-card" data-q="25">
+        <div class="question-num">Q25</div>
+        <div class="question-text">今の自分のビジネスに「もっと飛躍できる」と感じていますか？</div>
+        <div class="btn-group">
+          <button class="btn" onclick="answer(25, true, this)">はい</button>
+          <button class="btn" onclick="answer(25, false, this)">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button class="submit-btn" id="submitBtn" disabled onclick="showResult()">
+        結果をまとめる
+      </button>
+      <div class="submit-hint">すべての質問にお答えいただくとボタンが光ります</div>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div class="result-screen" id="resultScreen">
+    <span class="crystal-icon">&#x2728;</span>
+    <h2>ありがとうございました</h2>
+    <p>あなたの内なるビジョンが見えてきました。<br>以下の結果をコピーして送ってください。</p>
+    <div class="result-code" id="resultCode"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyResult()">コピーする</button>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 25;
+  const answers = {};
+
+  const labels = {
+    1: '多くの人に届けたい',
+    2: '遠方にも届けたい',
+    3: 'メッセージ発信したい',
+    4: 'ヒーリング等も提供したい',
+    5: 'オーダーメイドしたい',
+    6: 'ウェブサイトあり',
+    7: 'Instagram使用中',
+    8: 'LINE仕事利用中',
+    9: '実店舗・サロンあり',
+    10: 'イベント・対面販売中',
+    11: 'リピーターあり',
+    12: '口コミ・紹介あり',
+    13: '新規顧客が少ない',
+    14: 'ネットの見せ方に悩み',
+    15: '写真が苦手',
+    16: '文章が苦手',
+    17: 'デジタル操作に不安',
+    18: '売上安定させたい',
+    19: 'スピリチュアル世界観重視',
+    20: '自分のペース重視',
+    21: '顔出し・本名に抵抗',
+    22: '本物・質で勝負',
+    23: '深い関係性を大切に',
+    24: '講座・スクールに興味',
+    25: '飛躍できると感じている',
+  };
+
+  function answer(q, val, btn) {
+    answers[q] = val;
+
+    const card = btn.closest('.question-card');
+    const buttons = card.querySelectorAll('.btn');
+    buttons.forEach(b => b.classList.remove('selected-yes', 'selected-no'));
+
+    if (val) {
+      btn.classList.add('selected-yes');
+    } else {
+      btn.classList.add('selected-no');
+    }
+    card.classList.add('answered');
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = Object.keys(answers).length;
+    const pct = (count / TOTAL) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = count + ' / ' + TOTAL;
+
+    const btn = document.getElementById('submitBtn');
+    if (count === TOTAL) {
+      btn.disabled = false;
+    } else {
+      btn.disabled = true;
+    }
+  }
+
+  function showResult() {
+    document.getElementById('surveyForm').style.display = 'none';
+    const screen = document.getElementById('resultScreen');
+    screen.classList.add('show');
+
+    let html = '';
+    for (let i = 1; i <= TOTAL; i++) {
+      const val = answers[i];
+      const cls = val ? 'q-yes' : 'q-no';
+      const mark = val ? '&#x25C9; はい' : '&#x25CB; いいえ';
+      html += `<span class="${cls}">Q${i}. ${labels[i]}：${mark}</span><br>`;
+    }
+
+    document.getElementById('resultCode').innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function copyResult() {
+    let text = '【Inner Vision Survey 回答結果】\n\n';
+    for (let i = 1; i <= TOTAL; i++) {
+      const val = answers[i];
+      const mark = val ? 'はい' : 'いいえ';
+      text += `Q${i}. ${labels[i]}：${mark}\n`;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'コピーしました';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'コピーする';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
