@@ -736,9 +736,6 @@
     }
   }
 
-  const BLOB_API = 'https://jsonblob.com/api/jsonBlob';
-  const MASTER_BLOB = '019c69e2-56c6-7f0c-8cfe-3a5ab21219cf';
-
   async function showResult() {
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.textContent = '送信中...';
@@ -753,23 +750,11 @@
     }
     if (freeText) result['自由記入'] = freeText;
 
-    // Save as new blob and record its ID in master
+    // Save response via ntfy.sh
     try {
-      // 1. Create new blob with this response
-      const createResp = await fetch(BLOB_API, {
+      await fetch('https://ntfy.sh/powerstone_survey_2026', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(result)
-      });
-      const newId = createResp.headers.get('X-jsonblob-id') || createResp.headers.get('location')?.split('/').pop();
-
-      // 2. Update master blob with new ID
-      const master = await fetch(BLOB_API + '/' + MASTER_BLOB).then(r => r.json());
-      master.responses.push({ id: newId, timestamp: result.timestamp });
-      await fetch(BLOB_API + '/' + MASTER_BLOB, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(master)
       });
     } catch (e) {
       console.error('Save failed:', e);
