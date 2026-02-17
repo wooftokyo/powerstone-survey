@@ -313,6 +313,32 @@
       border-color: #a78bfa;
     }
 
+    /* Free text area */
+    .free-text {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(168, 130, 255, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      color: #d4c8e8;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .free-text::placeholder {
+      color: #5a4a7a;
+      font-style: italic;
+    }
+
+    .free-text:focus {
+      border-color: rgba(168, 130, 255, 0.5);
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.15);
+    }
+
     .copy-btn.copied {
       border-color: #22c55e;
       color: #86efac;
@@ -615,6 +641,16 @@
       </div>
     </div>
 
+    <!-- Free text section -->
+    <div class="section">
+      <div class="section-title"><span>&#x1F54A;&#xFE0F;</span> あなたの声を聴かせてください</div>
+
+      <div class="question-card">
+        <div class="question-text">今のお気持ちや、叶えたい夢、<br>気になっていることなど、自由にお書きください。</div>
+        <textarea id="freeText" class="free-text" placeholder="心に浮かんだことをそのままに..." rows="5"></textarea>
+      </div>
+    </div>
+
     <!-- Submit -->
     <div class="submit-area">
       <button class="submit-btn" id="submitBtn" disabled onclick="showResult()">
@@ -711,6 +747,11 @@
       html += `<span class="${cls}">Q${i}. ${labels[i]}：${mark}</span><br>`;
     }
 
+    const freeText = document.getElementById('freeText').value.trim();
+    if (freeText) {
+      html += `<br><span class="q-yes">&#x1F54A;&#xFE0F; 自由記入：</span><br><span style="color:#c0b0d8;">${freeText.replace(/\n/g, '<br>')}</span>`;
+    }
+
     document.getElementById('resultCode').innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -721,6 +762,11 @@
       const val = answers[i];
       const mark = val ? 'はい' : 'いいえ';
       text += `Q${i}. ${labels[i]}：${mark}\n`;
+    }
+
+    const freeText = document.getElementById('freeText').value.trim();
+    if (freeText) {
+      text += `\n【自由記入】\n${freeText}\n`;
     }
 
     navigator.clipboard.writeText(text).then(() => {
