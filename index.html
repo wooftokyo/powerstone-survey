@@ -663,10 +663,12 @@
   <!-- Result screen -->
   <div class="result-screen" id="resultScreen">
     <span class="crystal-icon">&#x2728;</span>
-    <h2>ありがとうございました</h2>
-    <p>あなたの内なるビジョンが見えてきました。<br>以下の結果をコピーして送ってください。</p>
-    <div class="result-code" id="resultCode"></div>
-    <button class="copy-btn" id="copyBtn" onclick="copyResult()">コピーする</button>
+    <h2>回答しました</h2>
+    <p>
+      ありがとうございました。<br>
+      あなたの内なるビジョン、しっかり届きました。<br><br>
+      <span style="color:#7c6a9a;font-size:0.8rem;">回答したことをお伝えください</span>
+    </p>
   </div>
 
 </div>
@@ -734,50 +736,40 @@
     }
   }
 
-  function showResult() {
+  const BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019c69e2-56c6-7f0c-8cfe-3a5ab21219cf';
+
+  async function showResult() {
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.textContent = '送信中...';
+    submitBtn.disabled = true;
+
+    const freeText = document.getElementById('freeText').value.trim();
+
+    // Build result data
+    const result = { timestamp: new Date().toISOString() };
+    for (let i = 1; i <= TOTAL; i++) {
+      result['Q' + i + '_' + labels[i]] = answers[i] ? 'はい' : 'いいえ';
+    }
+    if (freeText) result['自由記入'] = freeText;
+
+    // Save to cloud
+    try {
+      const existing = await fetch(BLOB_URL).then(r => r.json());
+      existing.responses.push(result);
+      await fetch(BLOB_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(existing)
+      });
+    } catch (e) {
+      console.error('Save failed:', e);
+    }
+
+    // Show thank you screen
     document.getElementById('surveyForm').style.display = 'none';
     const screen = document.getElementById('resultScreen');
     screen.classList.add('show');
-
-    let html = '';
-    for (let i = 1; i <= TOTAL; i++) {
-      const val = answers[i];
-      const cls = val ? 'q-yes' : 'q-no';
-      const mark = val ? '&#x25C9; はい' : '&#x25CB; いいえ';
-      html += `<span class="${cls}">Q${i}. ${labels[i]}：${mark}</span><br>`;
-    }
-
-    const freeText = document.getElementById('freeText').value.trim();
-    if (freeText) {
-      html += `<br><span class="q-yes">&#x1F54A;&#xFE0F; 自由記入：</span><br><span style="color:#c0b0d8;">${freeText.replace(/\n/g, '<br>')}</span>`;
-    }
-
-    document.getElementById('resultCode').innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function copyResult() {
-    let text = '【Inner Vision Survey 回答結果】\n\n';
-    for (let i = 1; i <= TOTAL; i++) {
-      const val = answers[i];
-      const mark = val ? 'はい' : 'いいえ';
-      text += `Q${i}. ${labels[i]}：${mark}\n`;
-    }
-
-    const freeText = document.getElementById('freeText').value.trim();
-    if (freeText) {
-      text += `\n【自由記入】\n${freeText}\n`;
-    }
-
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('copyBtn');
-      btn.textContent = 'コピーしました';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'コピーする';
-        btn.classList.remove('copied');
-      }, 2000);
-    });
   }
 </script>
 
